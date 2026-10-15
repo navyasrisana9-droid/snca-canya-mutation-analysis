@@ -1,0 +1,37 @@
+__pycache__/
+*.pyc
+.vscode/
+.ipynb_checkpoints/
+
+# Environments (don't upload these; requirements.txt covers it)
+.env
+.venv/
+venv/
+env/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Large or regenerable files
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.pkl
+*.npy
+*.npz
+*.zip
+*.tar.gz
+
+# Logs and scratch
+*.log
+tmp/
+scratch/
+old/
