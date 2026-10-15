@@ -1,5 +1,9 @@
 import subprocess
 import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+SKIP_SCORING = "--skip-scoring" in sys.argv  # use if CANYA scores already exist
 
 STEPS = [
     "step1_load_sequence.py",
@@ -7,7 +11,7 @@ STEPS = [
     "step4_wt_windows.py",
     "step5_one_mutation_windows.py",
     "step6_all_windows.py",
-    # "score_peptides.py",   # CANYA scoring: uncomment/move to where it belongs
+    "score_peptides.py",  # CANYA scoring (slow; skip with --skip-scoring)
     "step8_attach_scores.py",
     "step9_score_mutations.py",
     "step10_heatmap.py",
@@ -24,9 +28,14 @@ STEPS = [
     "step21_final_figures.py",
 ]
 
+(HERE / "results").mkdir(exist_ok=True)
+
 for script in STEPS:
+    if SKIP_SCORING and script == "score_peptides.py":
+        print(f"\n=== Skipping {script} ===", flush=True)
+        continue
     print(f"\n=== Running {script} ===", flush=True)
-    result = subprocess.run([sys.executable, script])
+    result = subprocess.run([sys.executable, script], cwd=HERE)
     if result.returncode != 0:
         sys.exit(f"{script} failed (exit code {result.returncode}). Stopping.")
 print("\nAll steps finished. Outputs are in results/.")
