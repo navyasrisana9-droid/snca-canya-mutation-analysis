@@ -364,15 +364,43 @@ def demo_banner(text):
     html(f'<div class="banner-demo">🧪 Demo data, not results from this study. {esc(text)}</div>')
 
 
-def show_plot(fig, key=None):
+def style_plot(fig):
+    """Make every chart readable: white card, black text, light grid, clear axis labels."""
+    black = "#000000"
     fig.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(255,255,255,0.55)",
-        font=dict(color=INK, family="Nunito, sans-serif"), margin=dict(l=40, r=20, t=60, b=40),
+        template="plotly_white",
+        paper_bgcolor="rgba(255,255,255,0.92)", plot_bgcolor="#ffffff",
+        font=dict(color=black, family="Nunito, sans-serif", size=14),
+        title=dict(font=dict(color=black, size=18, family="Nunito, sans-serif"), x=0.01, xanchor="left"),
+        legend=dict(font=dict(color=black)),
+        margin=dict(l=70, r=30, t=70, b=70),
+        hoverlabel=dict(bgcolor="#ffffff", font=dict(color=black)),
     )
+    axis = dict(
+        title_font=dict(color=black, size=14), tickfont=dict(color=black, size=12),
+        gridcolor="rgba(0,0,0,0.10)", zerolinecolor="rgba(0,0,0,0.35)",
+        linecolor="rgba(0,0,0,0.45)", showline=True, automargin=True,
+    )
+    fig.update_xaxes(**axis)
+    fig.update_yaxes(**axis)
+    fig.update_annotations(font=dict(color=black, size=13))
     try:
-        st.plotly_chart(fig, use_container_width=True, key=key)
+        fig.update_traces(colorbar=dict(tickfont=dict(color=black), title_font=dict(color=black)),
+                          selector=dict(type="heatmap"))
     except Exception:
-        st.plotly_chart(fig, width="stretch", key=key)
+        pass
+    return fig
+
+
+def show_plot(fig, key=None):
+    style_plot(fig)
+    try:
+        st.plotly_chart(fig, use_container_width=True, key=key, theme=None)
+    except Exception:
+        try:
+            st.plotly_chart(fig, width="stretch", key=key, theme=None)
+        except Exception:
+            st.plotly_chart(fig, key=key)
 
 
 def show_df(df, height=None):
@@ -1076,7 +1104,7 @@ def page_hotspots():
 
     pos = df.groupby("position")["delta"].agg(mean_abs=lambda s: s.abs().mean(), mean_delta="mean").reset_index()
     fig = go.Figure(go.Bar(x=pos["position"], y=pos["mean_abs"], marker_color=PURPLE))
-    fig.add_vrect(x0=61, x1=95, fillcolor=PINK, opacity=0.12, line_width=0, annotation_text="NAC")
+    fig.add_vrect(x0=61, x1=95, fillcolor=PINK, opacity=0.12, line_width=0, annotation_text="NAC region (61-95)", annotation_position="top left")
     fig.update_layout(title="Interactive: mutational sensitivity by position",
                       xaxis_title="Position", yaxis_title="Mean |change in CANYA score|")
     show_plot(fig, key="hot_bar")
@@ -1093,7 +1121,8 @@ def page_hotspots():
     piv = df.pivot_table(index="mut_aa", columns="position", values="delta").reindex(list(AA))
     lim = float(np.nanmax(np.abs(piv.values)))
     heat = go.Figure(go.Heatmap(z=piv.values, x=piv.columns, y=piv.index, zmin=-lim, zmax=lim,
-                                colorscale=heat_colorscale(), colorbar=dict(title="Δ score")))
+                                colorscale=heat_colorscale(), xgap=1, ygap=1, hoverongaps=False,
+                                colorbar=dict(title="Change in<br>CANYA score")))
     heat.update_layout(title="Every mutation: pink = predicted increase, blue = decrease",
                        xaxis_title="Position", yaxis_title="Amino acid substituted in", height=520)
     show_plot(heat, key="hot_heat")
@@ -1144,7 +1173,7 @@ def page_xai():
         st.markdown("### Random forest: predicted vs actual (held-out blocks)")
         fig2 = px.scatter(pred, x="delta", y="predicted_delta", opacity=0.5,
                           color_discrete_sequence=[PINK], hover_name="mutation" if "mutation" in pred else None)
-        fig2.update_layout(xaxis_title="CANYA change in score", yaxis_title="Model-predicted change")
+        fig2.update_layout(title="Random forest: predicted vs CANYA change in score", xaxis_title="CANYA change in score (actual)", yaxis_title="Model-predicted change in score")
         show_plot(fig2, key="xai_pred")
         st.caption("Ranking is moderately captured (Spearman about 0.45 in this project) "
                    "but magnitudes are not (R-squared about 0).")
@@ -1216,12 +1245,12 @@ def page_cross():
         show_df(cdf)
         if nums:
             fig = px.bar(cdf, x=name_col, y=nums[0], color_discrete_sequence=[PURPLE])
-            fig.update_layout(title=f"{nums[0]} by protein")
+            fig.update_layout(title=f"{nums[0]} by protein", xaxis_title="Protein", yaxis_title=nums[0])
             show_plot(fig, key="cross_bar")
             if len(nums) >= 2:
                 heat = go.Figure(go.Heatmap(z=cdf[nums].values, x=nums, y=cdf[name_col],
                                             colorscale=heat_colorscale()))
-                heat.update_layout(title="Protein comparison heatmap")
+                heat.update_layout(title="Protein comparison heatmap", xaxis_title="Metric", yaxis_title="Protein")
                 show_plot(heat, key="cross_heat")
         return
 
@@ -1243,12 +1272,12 @@ def page_cross():
     rng = np.random.default_rng(7)
     demo = pd.DataFrame({"protein": proteins, "demo metric": np.round(rng.uniform(0.2, 0.9, 5), 2)})
     fig = px.bar(demo, x="protein", y="demo metric", color_discrete_sequence=[PURPLE])
-    fig.update_layout(title="Demo: protein comparison (not real data)")
+    fig.update_layout(title="Demo: protein comparison (not real data)", xaxis_title="Protein", yaxis_title="Demo metric")
     show_plot(fig, key="cross_demo_bar")
     regions = ["N-term", "Region 2", "Region 3", "Region 4", "C-term"]
     z = np.round(rng.uniform(0, 1, (5, 5)), 2)
     heat = go.Figure(go.Heatmap(z=z, x=regions, y=proteins, colorscale=heat_colorscale()))
-    heat.update_layout(title="Demo: region sensitivity heatmap (not real data)")
+    heat.update_layout(title="Demo: region sensitivity heatmap (not real data)", xaxis_title="Protein region", yaxis_title="Protein")
     show_plot(heat, key="cross_demo_heat")
     st.caption("To fill this page, save a CSV such as results/cross_disease_summary.csv with one row "
                "per protein and numeric columns.")
@@ -1285,7 +1314,7 @@ def page_stats():
     ], 210)
 
     fig = go.Figure(go.Histogram(x=means, nbinsx=60, marker_color=PURPLE, opacity=0.8))
-    fig.add_vline(x=obs, line_color=PINK, line_width=3, annotation_text="known set")
+    fig.add_vline(x=obs, line_color=PINK, line_width=3, annotation_text="known set", annotation_position="top left")
     fig.update_layout(title="Permutation test: mean change in random sets of the same size",
                       xaxis_title="Mean change in CANYA score", yaxis_title="Count")
     show_plot(fig, key="stats_hist")
