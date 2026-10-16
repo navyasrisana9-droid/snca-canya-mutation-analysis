@@ -1,7 +1,7 @@
 import csv
 from pathlib import Path
 
-SEQ_FILE = Path("data/snca_P37840.fasta")
+SEQ_FILE = Path(__import__("os").environ.get("PROTEIN_FASTA", "data/snca_P37840.fasta"))
 WINDOW = 20
 AMINO_ACIDS = "ACDEFGHIKLMNPQRSTVWY"
 

@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 import pandas as pd
 
 AA = "ACDEFGHIKLMNPQRSTVWY"
@@ -26,8 +28,13 @@ for name, table in props.items():
     df[f"mut_{name}"] = df["mut_aa"].map(table)
     df[f"d_{name}"] = df[f"mut_{name}"] - df[f"wt_{name}"]
 
-df["in_NAC"] = df["position"].between(61, 95).astype(int)
-df["mut_is_proline"] = (df["mut_aa"] == "P").astype(int)
+# Optional annotated region, e.g. PROTEIN_REGION="61-95". Defaults to the NAC for alpha-synuclein.
+region = os.environ.get("PROTEIN_REGION") or ("61-95" if os.environ.get("PROTEIN_NAME", "snca") == "snca" else "")
+if region:
+    lo, hi = map(int, region.split("-"))
+    df["in_NAC"] = df["position"].between(lo, hi).astype(int)
+else:
+    df["in_NAC"] = 0  # no annotated region for this proteindf["mut_is_proline"] = (df["mut_aa"] == "P").astype(int)
 
 df.to_csv("results/step15_features.csv", index=False)
 print("Table shape:", df.shape)

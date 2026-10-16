@@ -1,0 +1,104 @@
+Build a complete Streamlit website inside my existing snca_project folder.
+
+Use these files automatically if present:
+
+results/step17_shap_summary.png
+results/step19_position_sensitivity.png
+results/step21_figure.png
+results/*.csv
+
+Create:
+
+app.py
+
+The websit* should have:
+
+🏠 Home
+🔬 Mutation*Explorer
+🔥 Hotspot Mapping
+🤖 Exp*ainable AI
+🧠 Parkinson Mutations
+*� Cross-Disease Analysis
+📊 Statis*ical Validation
+⬇ Downloads
+
+Theme*
+
+Cute scifi biotech startup.
+
+Col*rs:
+
+Lavender
+Pink
+Light blue
+Dark*purple accents
+
+Use:
+
+glassmorphis*
+rounded corners
+hover effects
+ani*ated cards
+
+Home Page:
+
+Show:
+
+Tit*e:
+AI-Based Analysis of Alpha-Synu*lein Aggregation
+
+Subtitle:
+Comput*tional Neuroscience Research Platf*rm
+
+Author:
+Sana Manchikanti
+
+Disp*ay cards:
+
+2660 Mutations
+5 Protei*s
+Random Forest
+XGBoost
+SHAP AI
+
+M*tation Explorer:
+
+Allow mutation s*arch.
+
+Examples:
+
+A53T
+A30P
+E46K
+H*0Q
+G51D
+
+Display:
+
+Position
+Percen*ile
+Score
+Risk Category
+
+Hotspot P*ge:
+
+Load position sensitivity res*lts.
+
+Display interactive Plotly g*aphs.
+
+SHAP Page:
+
+Load and displa* step17_shap_summary.png
+
+Cross Di*ease Page:
+
+Load comparison result* if available.
+
+Downloads Page:
+
+A*low downloading CSV files from res*lts/.
+
+Make the code Streamlit-onl*.
+Use Plotly.
+Use modern styling.
+*enerate complete app.py.

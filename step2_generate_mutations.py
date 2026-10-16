@@ -1,6 +1,7 @@
+import os
 from pathlib import Path
 
-SEQ_FILE = Path("data/snca_P37840.fasta")
+SEQ_FILE = Path(os.environ.get("PROTEIN_FASTA", "data/snca_P37840.fasta"))
 AMINO_ACIDS = "ACDEFGHIKLMNPQRSTVWY"
 
 
@@ -23,13 +24,14 @@ for i, original in enumerate(wt):  # i counts from 0
 print("Total mutations:", len(mutations))
 print("First 3:", [m[0] for m in mutations[:3]])
 
-# Sanity check on one known mutation
+# Sanity check on one known mutation (alpha-synuclein only)
 lookup = dict(mutations)
-a53t = lookup["A53T"]
-print("A53T differs from wild type at exactly one position:",
-      sum(a != b for a, b in zip(wt, a53t)) == 1)
-print("Residue 53 in A53T is now:", a53t[52])
-print("Same length as wild type:", len(a53t) == len(wt))
+if "A53T" in lookup and os.environ.get("PROTEIN_NAME", "snca") == "snca":
+    a53t = lookup["A53T"]
+    print("A53T differs from wild type at exactly one position:",
+          sum(a != b for a, b in zip(wt, a53t)) == 1)
+    print("Residue 53 in A53T is now:", a53t[52])
+    print("Same length as wild type:", len(a53t) == len(wt))
 
 import pandas as pd
 

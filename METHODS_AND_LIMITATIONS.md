@@ -43,3 +43,12 @@ experimental findings qualitatively.
    readouts than CANYA's nucleation score.
 7. **Position effects are not independent.** The 19 substitutions at one position
    share a context, so p-values are descriptive.
+
+   **Cross-protein comparison.** Amyloid-beta 42 (APP residues 672-713, UniProt
+P05067) and the tau repeat domain (residues 244-372 of the 441-residue isoform,
+UniProt P10636-8) were run through the same pipeline: all single amino acid
+substitutions, scored with CANYA (default mode) across overlapping 20-residue
+windows. For each protein we compared mean |delta|, the fraction of mutations
+increasing the score, the Spearman correlation between delta and the change in
+Kyte-Doolittle hydrophobicity, and mean delta for proline and charged
+substitutions.

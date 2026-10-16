@@ -48,3 +48,16 @@ Figures and tables are written to `results/`.
 - Sahay S, et al. Familial Parkinson disease-associated mutations alter the
   site-specific microenvironment and dynamics of alpha-synuclein. J Biol Chem
   290:7804 (2015).
+
+  ## Cross-protein comparison
+The same pipeline was run on amyloid-beta 42 and the tau repeat domain (residues
+244-372) and compared with alpha-synuclein.
+
+    python run_all.py --fasta data/abeta42.fasta --name abeta
+    python run_all.py --fasta data/tau_RD.fasta --name tau
+    python step25_cross_protein.py
+
+Across all three proteins, mutations that increase hydrophobicity tend to raise
+the predicted nucleation score (Spearman 0.38-0.49), while proline and charged
+(D/E/K/R) substitutions tend to lower it. The share of mutations that raise the
+score differs between proteins (67%, 44%, 56%).
