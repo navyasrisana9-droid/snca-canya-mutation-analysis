@@ -603,8 +603,8 @@ def option_info():
 
     # Mutation Radar: scanner tool
     if (BASE / "run_all.py").exists():
-        o5, o5_text = PROG, ("run_all.py rebuilds the analysis and this dashboard searches every single "
-                             "mutation. Scoring any new sequence is not built yet.")
+        o5, o5_text = DONE, ("run_all.py rebuilds the whole analysis, and Mutation Forge scans any of the "
+                             "2,660 single mutations of alpha-synuclein.")
     else:
         o5, o5_text = TODO, "No run_all.py found."
 
@@ -897,8 +897,7 @@ def mission_map():
         else:
             st.info("Finish the remaining phases first, then try this button again.")
 
-    st.caption("Mutation Radar is partly built: this dashboard and run_all.py cover the project's own protein, "
-               "but scoring a brand-new sequence is future work.")
+    st.caption("Mutation Radar covers every single mutation of alpha-synuclein. Scoring a brand-new protein sequence is listed as future work on the About page.")
 
 
 def page_explorer():
